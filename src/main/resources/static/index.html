@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医院挂号预约系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            text-align: center;
+            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        
+        .login-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .login-section h2 {
+            color: #333;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+        
+        .login-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .login-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            color: white;
+            text-decoration: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: block;
+        }
+        
+        .login-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            color: white;
+        }
+        
+        .login-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .login-card p {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .feature {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: left;
+        }
+        
+        .feature h4 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .footer {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            text-align: center;
+            color: white;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* 注册模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background: white;
+            margin: 3% auto;
+            padding: 2.5rem;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .register-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 1rem;
+        }
+        
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+        
+        .register-btn:active {
+            transform: translateY(0);
+        }
+        
+        .message {
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏥 医院挂号预约系统</h1>
+        <p>方便、快捷、安全的医疗服务平台</p>
+    </div>
+
+    <div class="container">
+        <div class="login-section">
+            <h2>选择登录方式</h2>
+            
+            <div class="login-options">
+                <a href="admin-login.html" class="login-card">
+                    <h3>👨‍💼 管理员登录</h3>
+                    <p>系统管理、医生管理、患者管理、科室管理、排班管理等全面功能</p>
+                </a>
+                
+                <a href="doctor-login.html" class="login-card">
+                    <h3>👩‍⚕️ 医生登录</h3>
+                    <p>查看个人信息、排班信息、患者队列、申请调班等功能</p>
+                </a>
+                
+                <a href="patient-login.html" class="login-card">
+                    <h3>🧑‍🤝‍🧑 患者登录</h3>
+                    <p>查询医生信息、挂号预约、取消预约、修改预约等服务</p>
+                </a>
+                
+                <a href="#" onclick="showRegister(event)" class="login-card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                    <h3>✨ 患者注册</h3>
+                    <p>快速注册患者账户，享受便捷的在线医疗服务</p>
+                </a>
+            </div>
+            
+            <div class="features">
+                <div class="feature">
+                    <h4>🔍 信息查询</h4>
+                    <p>多种方式查询医生、科室号源情况，便于患者选择合适的就诊时间</p>
+                </div>
+                <div class="feature">
+                    <h4>📅 预约管理</h4>
+                    <p>支持挂号预约、取消预约、修改预约，灵活调整就诊安排</p>
+                </div>
+                <div class="feature">
+                    <h4>📊 统计分析</h4>
+                    <p>预约情况统计分析，为制定排班策略提供数据支持</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 患者注册模态框 -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideRegister()">&times;</span>
+            <h2 style="margin-bottom: 1.5rem; color: #333; text-align: center;">
+                ✨ 患者注册
+            </h2>
+            <p style="text-align: center; color: #666; margin-bottom: 2rem;">
+                填写以下信息创建您的患者账户
+            </p>
+            
+            <form id="registerForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="regName">姓名 *</label>
+                        <input type="text" id="regName" required placeholder="请输入您的真实姓名">
+                    </div>
+                    <div class="form-group">
+                        <label for="regGender">性别 *</label>
+                        <select id="regGender" required>
+                            <option value="">请选择性别</option>
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regPhone">手机号码 *</label>
+                    <input type="tel" id="regPhone" required placeholder="请输入11位手机号码">
+                </div>
+                
+                <div class="form-group">
+                    <label for="regIdCard">身份证号 *</label>
+                    <input type="text" id="regIdCard" required placeholder="请输入18位身份证号码">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="regPassword">密码 *</label>
+                        <input type="password" id="regPassword" required placeholder="请设置登录密码">
+                    </div>
+                    <div class="form-group">
+                        <label for="regPasswordConfirm">确认密码 *</label>
+                        <input type="password" id="regPasswordConfirm" required placeholder="请再次输入密码">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regAge">年龄</label>
+                    <input type="number" id="regAge" placeholder="请输入年龄（可选）" min="1" max="120">
+                </div>
+                
+                <div class="form-group">
+                    <label for="regAddress">家庭地址</label>
+                    <input type="text" id="regAddress" placeholder="请输入家庭地址（可选）">
+                </div>
+                
+                <button type="submit" class="register-btn">
+                    立即注册
+                </button>
+                
+                <div id="registerError" class="message error-message"></div>
+                <div id="registerSuccess" class="message success-message"></div>
+            </form>
+            
+            <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #eee;">
+                <span style="color: #666;">已有账户？</span>
+                <a href="patient-login.html" style="color: #667eea; text-decoration: none; font-weight: 500;">立即登录</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.3.4/dist/axios.min.js"></script>
+    <script>
+        // 显示注册模态框
+        function showRegister(event) {
+            event.preventDefault();
+            document.getElementById('registerModal').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // 防止背景滚动
+        }
+
+        // 隐藏注册模态框
+        function hideRegister() {
+            document.getElementById('registerModal').style.display = 'none';
+            document.body.style.overflow = 'auto'; // 恢复滚动
+            
+            // 清空表单和消息
+            document.getElementById('registerForm').reset();
+            document.getElementById('registerError').style.display = 'none';
+            document.getElementById('registerSuccess').style.display = 'none';
+        }
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('registerModal');
+            if (event.target === modal) {
+                hideRegister();
+            }
+        }
+
+        // 手机号格式验证
+        function validatePhone(phone) {
+            const phoneRegex = /^1[3-9]\d{9}$/;
+            return phoneRegex.test(phone);
+        }
+
+        // 身份证号格式验证
+        function validateIdCard(idCard) {
+            const idCardRegex = /^[1-9]\d{5}(18|19|20)\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/;
+            return idCardRegex.test(idCard);
+        }
+
+        // 注册表单处理
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('regName').value.trim();
+            const gender = document.getElementById('regGender').value;
+            const phone = document.getElementById('regPhone').value.trim();
+            const idCard = document.getElementById('regIdCard').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+            const age = document.getElementById('regAge').value;
+            const address = document.getElementById('regAddress').value.trim();
+            
+            const errorDiv = document.getElementById('registerError');
+            const successDiv = document.getElementById('registerSuccess');
+            
+            // 隐藏之前的消息
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            // 表单验证
+            if (!name || !gender || !phone || !idCard || !password || !passwordConfirm) {
+                errorDiv.textContent = '请填写所有必填项（标*的字段）';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (!validatePhone(phone)) {
+                errorDiv.textContent = '请输入正确的手机号码格式';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (!validateIdCard(idCard)) {
+                errorDiv.textContent = '请输入正确的身份证号码格式';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (password.length < 6) {
+                errorDiv.textContent = '密码长度不能少于6位';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (password !== passwordConfirm) {
+                errorDiv.textContent = '两次输入的密码不一致';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            // 准备注册数据
+            const registerData = {
+                name: name,
+                gender: gender,
+                phone: phone,
+                idCard: idCard,
+                password: password
+            };
+            
+            // 添加可选字段
+            if (age) {
+                registerData.age = parseInt(age);
+            }
+            if (address) {
+                registerData.address = address;
+            }
+            
+            try {
+                // 禁用提交按钮，防止重复提交
+                const submitBtn = e.target.querySelector('.register-btn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = '注册中...';
+                
+                const response = await axios.post('/patient', registerData);
+                
+                if (response.data.code === 200) {
+                    successDiv.innerHTML = `
+                        <strong>🎉 注册成功！</strong><br>
+                        您的患者账户已创建完成，现在可以使用手机号和密码登录了。
+                    `;
+                    successDiv.style.display = 'block';
+                    
+                    // 清空表单
+                    document.getElementById('registerForm').reset();
+                    
+                    // 3秒后自动跳转到登录页面
+                    setTimeout(() => {
+                        window.location.href = 'patient-login.html';
+                    }, 3000);
+                } else {
+                    errorDiv.textContent = response.data.message || '注册失败，请稍后重试';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('注册错误:', error);
+                
+                if (error.response && error.response.data) {
+                    errorDiv.textContent = error.response.data.message || '注册失败，请稍后重试';
+                } else {
+                    errorDiv.textContent = '网络连接失败，请检查网络后重试';
+                }
+                errorDiv.style.display = 'block';
+            } finally {
+                // 恢复提交按钮
+                const submitBtn = e.target.querySelector('.register-btn');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '立即注册';
+            }
+        });
+
+        // ESC键关闭模态框
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                hideRegister();
+            }
+        });
+    </script>
+
+    <div class="footer">
+        <p>&copy; 2024 医院挂号预约系统 | 基于Spring Boot + Vue.js开发</p>
+    </div>
+</body>
+</html> 

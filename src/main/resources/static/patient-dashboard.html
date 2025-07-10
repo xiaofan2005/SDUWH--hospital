@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>患者预约系统 - 医院预约挂号系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 1rem;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section h2 {
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            margin-right: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .info-card h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-card p {
+            color: #666;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .schedule-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .schedule-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .schedule-card h4 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .schedule-info {
+            margin-bottom: 1rem;
+        }
+
+        .schedule-info span {
+            display: block;
+            margin-bottom: 0.25rem;
+            color: #666;
+        }
+
+        .available {
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        .unavailable {
+            color: #dc3545;
+            font-weight: 500;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        /* 表单按钮样式 */
+        .form-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        /* 按钮样式增强 */
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #212529;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #e0a800, #d39e00);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0056b3, #004085);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c82333, #bd2130);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+        }
+
+        /* 模态框内信息卡片样式 */
+        #currentAppointmentInfo {
+            background: #e9ecef;
+            border-left: 4px solid #17a2b8;
+            margin-bottom: 20px;
+        }
+
+        #currentAppointmentInfo h4 {
+            color: #17a2b8;
+            margin-bottom: 10px;
+        }
+
+        #currentAppointmentInfo p {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        /* 点击模态框外部关闭 */
+        .modal {
+            cursor: pointer;
+        }
+
+        .modal-content {
+            cursor: default;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: 2;
+            }
+            
+            .main-content {
+                order: 1;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .schedule-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1>患者预约系统</h1>
+            </div>
+            <div class="user-info">
+                <span id="patientName">患者</span>
+                <button class="logout-btn" onclick="logout()">退出登录</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <div class="sidebar">
+                <button class="nav-item active" onclick="showSection('personal-info')">个人信息</button>
+                <button class="nav-item" onclick="showSection('appointment-booking')">预约挂号</button>
+                <button class="nav-item" onclick="showSection('my-appointments')">我的预约</button>
+                <button class="nav-item" onclick="showSection('appointment-history')">历史记录</button>
+            </div>
+
+            <div class="main-content">
+                <!-- 个人信息 -->
+                <div id="personal-info" class="section active">
+                    <h2>个人信息</h2>
+                    <div id="patientInfoGrid">
+                        <!-- 动态加载患者信息 -->
+                    </div>
+                </div>
+
+                <!-- 预约挂号 -->
+                <div id="appointment-booking" class="section">
+                    <h2>预约挂号</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="departmentSelect">选择科室</label>
+                            <select id="departmentSelect" onchange="loadDoctorsByDepartment(this.value)">
+                                <option value="">请选择科室</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="doctorSelect">选择医生</label>
+                            <select id="doctorSelect" onchange="loadAvailableSlots(this.value)">
+                                <option value="">请先选择科室</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="scheduleSelect">选择时段</label>
+                            <select id="scheduleSelect">
+                                <option value="">请选择时段</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="symptoms">症状描述</label>
+                            <textarea id="symptoms" rows="3" placeholder="请描述您的症状"></textarea>
+                        </div>
+                        <button class="btn btn-primary" onclick="makeAppointment()">提交预约</button>
+                    </div>
+                    
+                    <h3>可预约时间</h3>
+                    <div id="scheduleContainer" class="schedule-grid">
+                        <!-- 动态加载可预约时间 -->
+                    </div>
+                </div>
+
+                <!-- 我的预约 -->
+                <div id="my-appointments" class="section">
+                    <h2>我的预约</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>预约日期</th>
+                                    <th>时间段</th>
+                                    <th>医生</th>
+                                    <th>科室</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="appointmentTableBody">
+                                <!-- 动态加载预约信息 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 历史记录 -->
+                <div id="appointment-history" class="section">
+                    <h2>历史记录</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>预约日期</th>
+                                    <th>时间段</th>
+                                    <th>医生</th>
+                                    <th>科室</th>
+                                    <th>状态</th>
+                                    <th>创建时间</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody">
+                                <!-- 动态加载历史记录 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 预约确认模态框 -->
+    <div id="appointmentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAppointmentModal()">&times;</span>
+            <h3>确认预约</h3>
+            <div id="appointmentDetails"></div>
+            <div style="margin-top: 1rem;">
+                <button class="btn btn-primary" onclick="confirmAppointment()">确认预约</button>
+                <button class="btn" onclick="closeAppointmentModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 修改预约模态框 -->
+    <div id="modifyAppointmentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModifyAppointmentModal()">&times;</span>
+            <h3>修改预约</h3>
+            <form id="modifyAppointmentForm">
+                <input type="hidden" id="modifyAppointmentId">
+                
+                <div class="form-group">
+                    <label>当前预约信息</label>
+                    <div id="currentAppointmentInfo" class="info-card">
+                        <!-- 当前预约信息将在这里显示 -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="newDepartmentSelect">新科室</label>
+                    <select id="newDepartmentSelect" onchange="loadNewDoctorsByDepartment(this.value)">
+                        <option value="">请选择科室</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="newDoctorSelect">新医生</label>
+                    <select id="newDoctorSelect" onchange="loadNewAvailableSlots(this.value)">
+                        <option value="">请先选择科室</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="newScheduleSelect">新时段</label>
+                    <select id="newScheduleSelect">
+                        <option value="">请先选择医生</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="newSymptoms">症状描述</label>
+                    <textarea id="newSymptoms" rows="3" placeholder="请描述您的症状"></textarea>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="submit" class="btn btn-primary">确认修改</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModifyAppointmentModal()">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.3.4/dist/axios.min.js"></script>
+    <script>
+        let currentPatientId = null;
+        let selectedSchedule = null;
+
+        // 检查登录状态
+        function checkLogin() {
+            const userRole = sessionStorage.getItem('userRole');
+            const patientId = sessionStorage.getItem('patientId');
+            const patientName = sessionStorage.getItem('patientName');
+            
+            if (userRole !== 'patient' || !patientId) {
+                window.location.href = 'patient-login.html';
+                return false;
+            }
+            
+            currentPatientId = patientId;
+            document.getElementById('patientName').textContent = patientName || '患者';
+            return true;
+        }
+
+        // 显示指定部分
+        function showSection(sectionId, targetElement = null) {
+            // 隐藏所有部分
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // 移除所有导航项的active类
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 显示指定部分
+            document.getElementById(sectionId).classList.add('active');
+            
+            // 激活对应的导航项
+            if (targetElement) {
+                targetElement.classList.add('active');
+            } else if (event && event.target) {
+                event.target.classList.add('active');
+            } else {
+                // 如果没有event对象，则找到对应的导航按钮并激活
+                const navButtons = document.querySelectorAll('.nav-item');
+                navButtons.forEach(button => {
+                    if (button.onclick && button.onclick.toString().includes(sectionId)) {
+                        button.classList.add('active');
+                    }
+                });
+            }
+            
+            // 根据部分加载数据
+            switch(sectionId) {
+                case 'personal-info':
+                    loadPatientInfo();
+                    break;
+                case 'appointment-booking':
+                    loadDepartments();
+                    break;
+                case 'my-appointments':
+                    loadMyAppointments();
+                    break;
+                case 'appointment-history':
+                    loadAppointmentHistory();
+                    break;
+            }
+        }
+
+        // 加载患者信息
+        async function loadPatientInfo() {
+            try {
+                const response = await axios.get(`/patient/${currentPatientId}`);
+                if (response.data.code === 200) {
+                    const patient = response.data.data;
+                    document.getElementById('patientInfoGrid').innerHTML = `
+                        <div class="info-card">
+                            <h3>姓名</h3>
+                            <p>${patient.name}</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>性别</h3>
+                            <p>${patient.gender}</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>电话</h3>
+                            <p>${patient.phone}</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>年龄</h3>
+                            <p>${patient.age || '未设置'}</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>身份证号</h3>
+                            <p>${patient.idCard || '未设置'}</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>地址</h3>
+                            <p>${patient.address || '未设置'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('加载患者信息失败:', error);
+            }
+        }
+
+        // 加载科室列表
+        async function loadDepartments() {
+            try {
+                const response = await axios.get('/department');
+                if (response.data.code === 200) {
+                    const departments = response.data.data;
+                    const select = document.getElementById('departmentSelect');
+                    select.innerHTML = '<option value="">请选择科室</option>';
+                    departments.forEach(dept => {
+                        select.innerHTML += `<option value="${dept.id}">${dept.name}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('加载科室失败:', error);
+            }
+        }
+
+        // 根据科室加载医生
+        async function loadDoctorsByDepartment(departmentId) {
+            if (!departmentId) {
+                document.getElementById('doctorSelect').innerHTML = '<option value="">请先选择科室</option>';
+                return;
+            }
+
+            try {
+                const response = await axios.get(`/doctor/department/${departmentId}`);
+                if (response.data.code === 200) {
+                    const doctors = response.data.data;
+                    const select = document.getElementById('doctorSelect');
+                    select.innerHTML = '<option value="">请选择医生</option>';
+                    doctors.forEach(doctor => {
+                        select.innerHTML += `<option value="${doctor.id}">${doctor.name} - ${doctor.title}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('加载医生失败:', error);
+            }
+        }
+
+        // 根据医生加载可用时段
+        async function loadAvailableSlots(doctorId) {
+            if (!doctorId) {
+                document.getElementById('scheduleSelect').innerHTML = '<option value="">请先选择医生</option>';
+                return;
+            }
+
+            try {
+                const response = await axios.get(`/schedule/doctor/${doctorId}/available`);
+                if (response.data.code === 200) {
+                    const schedules = response.data.data;
+                    const select = document.getElementById('scheduleSelect');
+                    select.innerHTML = '<option value="">请选择时段</option>';
+                    schedules.forEach(schedule => {
+                        const availableSlots = schedule.totalCount - schedule.bookedCount;
+                        if (availableSlots > 0) {
+                            select.innerHTML += `<option value="${schedule.id}">${schedule.scheduleDate} ${schedule.timeSlotName} (剩余${availableSlots}个号)</option>`;
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('加载时段失败:', error);
+            }
+        }
+
+        // 提交预约
+        async function makeAppointment() {
+            const scheduleId = document.getElementById('scheduleSelect').value;
+            const symptoms = document.getElementById('symptoms').value;
+
+            if (!scheduleId) {
+                alert('请选择预约时段');
+                return;
+            }
+
+            try {
+                const response = await axios.post('/appointment', {
+                    patientId: currentPatientId,
+                    scheduleId: scheduleId,
+                    symptoms: symptoms
+                });
+
+                if (response.data.code === 200) {
+                    alert('预约成功！');
+                    // 手动清空表单元素
+                    document.getElementById('departmentSelect').value = '';
+                    document.getElementById('doctorSelect').innerHTML = '<option value="">请先选择科室</option>';
+                    document.getElementById('scheduleSelect').innerHTML = '<option value="">请选择时段</option>';
+                    document.getElementById('symptoms').value = '';
+                    loadMyAppointments();
+                } else {
+                    alert(response.data.message || '预约失败');
+                }
+            } catch (error) {
+                console.error('预约失败:', error);
+                alert('预约失败，请稍后重试');
+            }
+        }
+
+        // 加载我的预约
+        async function loadMyAppointments() {
+            try {
+                const response = await axios.get(`/appointment/patient/${currentPatientId}/current`);
+                if (response.data.code === 200) {
+                    const appointments = response.data.data;
+                    const tableBody = document.getElementById('appointmentTableBody');
+                    tableBody.innerHTML = appointments.map(appointment => `
+                        <tr>
+                            <td>${appointment.appointmentDate}</td>
+                            <td>${appointment.timeSlotName}</td>
+                            <td>${appointment.doctorName}</td>
+                            <td>${appointment.departmentName}</td>
+                            <td>
+                                <span class="badge ${getStatusBadgeClass(appointment.status)}">
+                                    ${getStatusText(appointment.status)}
+                                </span>
+                            </td>
+                            <td>
+                                ${appointment.status === '已预约' ? 
+                                    `<button class="btn btn-warning btn-sm" onclick="showModifyAppointmentModal('${appointment.id}')">修改</button>` : 
+                                    ''
+                                }
+                                <button class="btn btn-danger btn-sm" onclick="cancelAppointment('${appointment.id}')">取消</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    document.getElementById('appointmentTableBody').innerHTML = '<tr><td colspan="6">暂无预约记录</td></tr>';
+                }
+            } catch (error) {
+                console.error('加载预约失败:', error);
+                document.getElementById('appointmentTableBody').innerHTML = '<tr><td colspan="6">加载失败</td></tr>';
+            }
+        }
+
+        // 加载历史预约
+        async function loadAppointmentHistory() {
+            try {
+                const response = await axios.get(`/appointment/patient/${currentPatientId}/history`);
+                if (response.data.code === 200) {
+                    const appointments = response.data.data;
+                    const tableBody = document.getElementById('historyTableBody');
+                    tableBody.innerHTML = appointments.map(appointment => `
+                        <tr>
+                            <td>${appointment.appointmentDate || '未设置'}</td>
+                            <td>${appointment.timeSlotName || '未设置'}</td>
+                            <td>${appointment.doctorName || '未知医生'}</td>
+                            <td>${appointment.departmentName || '未知科室'}</td>
+                            <td>
+                                <span class="badge ${getStatusBadgeClass(appointment.status)}">
+                                    ${getStatusText(appointment.status)}
+                                </span>
+                            </td>
+                            <td>${formatDateTime(appointment.appointmentTime) || '未知'}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    document.getElementById('historyTableBody').innerHTML = '<tr><td colspan="6">暂无历史记录</td></tr>';
+                }
+            } catch (error) {
+                console.error('加载历史预约失败:', error);
+                document.getElementById('historyTableBody').innerHTML = '<tr><td colspan="6">加载失败</td></tr>';
+            }
+        }
+
+        // 取消预约
+        async function cancelAppointment(appointmentId) {
+            if (!confirm('确定要取消这个预约吗？')) {
+                return;
+            }
+
+            try {
+                const response = await axios.delete(`/appointment/${appointmentId}`);
+                if (response.data.code === 200) {
+                    alert('预约已取消');
+                    loadMyAppointments();
+                } else {
+                    alert(response.data.message || '取消失败');
+                }
+            } catch (error) {
+                console.error('取消预约失败:', error);
+                alert('取消失败，请稍后重试');
+            }
+        }
+
+        // 获取状态徽章样式
+        function getStatusBadgeClass(status) {
+            switch(status) {
+                case '已预约': return 'bg-warning';
+                case '已确认': return 'bg-info';
+                case '已完成': return 'bg-success';
+                case '已取消': return 'bg-danger';
+                case '过期': return 'bg-secondary';
+                // 兼容英文状态值
+                case 'BOOKED': return 'bg-warning';
+                case 'CONFIRMED': return 'bg-info';
+                case 'COMPLETED': return 'bg-success';
+                case 'CANCELLED': return 'bg-danger';
+                default: return 'bg-secondary';
+            }
+        }
+
+        // 获取状态文本
+        function getStatusText(status) {
+            switch(status) {
+                case '已预约': return '已预约';
+                case '已确认': return '已确认';
+                case '已完成': return '已完成';
+                case '已取消': return '已取消';
+                case '过期': return '过期';
+                // 兼容英文状态值
+                case 'BOOKED': return '已预约';
+                case 'CONFIRMED': return '已确认';
+                case 'COMPLETED': return '已完成';
+                case 'CANCELLED': return '已取消';
+                default: return '未知';
+            }
+        }
+
+        // 格式化日期时间
+        function formatDateTime(dateTimeString) {
+            if (!dateTimeString) return '未知';
+            
+            try {
+                const date = new Date(dateTimeString);
+                if (isNaN(date.getTime())) return '未知';
+                
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                
+                return `${year}-${month}-${day} ${hours}:${minutes}`;
+            } catch (error) {
+                return '未知';
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        // 显示修改预约模态框
+        async function showModifyAppointmentModal(appointmentId) {
+            try {
+                // 获取当前预约信息
+                const response = await axios.get(`/appointment/vo/selectById?id=${appointmentId}`);
+                if (response.data.code === 200) {
+                    const appointment = response.data.data;
+                    
+                    // 设置预约ID
+                    document.getElementById('modifyAppointmentId').value = appointmentId;
+                    
+                    // 显示当前预约信息
+                    document.getElementById('currentAppointmentInfo').innerHTML = `
+                        <h4>当前预约</h4>
+                        <p><strong>科室：</strong>${appointment.departmentName}</p>
+                        <p><strong>医生：</strong>${appointment.doctorName}</p>
+                        <p><strong>日期：</strong>${appointment.appointmentDate}</p>
+                        <p><strong>时间：</strong>${appointment.timeSlotName}</p>
+                        <p><strong>症状：</strong>${appointment.symptoms || '无'}</p>
+                    `;
+                    
+                    // 设置当前症状
+                    document.getElementById('newSymptoms').value = appointment.symptoms || '';
+                    
+                    // 加载科室列表
+                    await loadDepartmentsForModify();
+                    
+                    // 显示模态框
+                    document.getElementById('modifyAppointmentModal').style.display = 'block';
+                } else {
+                    alert('获取预约信息失败：' + response.data.message);
+                }
+            } catch (error) {
+                console.error('获取预约信息失败:', error);
+                alert('获取预约信息失败');
+            }
+        }
+
+        // 关闭修改预约模态框
+        function closeModifyAppointmentModal() {
+            document.getElementById('modifyAppointmentModal').style.display = 'none';
+            // 清空表单
+            document.getElementById('modifyAppointmentForm').reset();
+            document.getElementById('newDoctorSelect').innerHTML = '<option value="">请先选择科室</option>';
+            document.getElementById('newScheduleSelect').innerHTML = '<option value="">请先选择医生</option>';
+        }
+
+        // 为修改预约加载科室列表
+        async function loadDepartmentsForModify() {
+            try {
+                const response = await axios.get('/department');
+                if (response.data.code === 200) {
+                    const departments = response.data.data;
+                    const select = document.getElementById('newDepartmentSelect');
+                    select.innerHTML = '<option value="">请选择科室</option>';
+                    departments.forEach(dept => {
+                        select.innerHTML += `<option value="${dept.id}">${dept.name}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('加载科室失败:', error);
+            }
+        }
+
+        // 根据科室加载医生（用于修改预约）
+        async function loadNewDoctorsByDepartment(departmentId) {
+            if (!departmentId) {
+                document.getElementById('newDoctorSelect').innerHTML = '<option value="">请先选择科室</option>';
+                document.getElementById('newScheduleSelect').innerHTML = '<option value="">请先选择医生</option>';
+                return;
+            }
+
+            try {
+                const response = await axios.get(`/doctor/department/${departmentId}`);
+                if (response.data.code === 200) {
+                    const doctors = response.data.data;
+                    const select = document.getElementById('newDoctorSelect');
+                    select.innerHTML = '<option value="">请选择医生</option>';
+                    doctors.forEach(doctor => {
+                        select.innerHTML += `<option value="${doctor.id}">${doctor.name} - ${doctor.title}</option>`;
+                    });
+                    // 清空时段选择
+                    document.getElementById('newScheduleSelect').innerHTML = '<option value="">请先选择医生</option>';
+                }
+            } catch (error) {
+                console.error('加载医生失败:', error);
+            }
+        }
+
+        // 根据医生加载可用时段（用于修改预约）
+        async function loadNewAvailableSlots(doctorId) {
+            if (!doctorId) {
+                document.getElementById('newScheduleSelect').innerHTML = '<option value="">请先选择医生</option>';
+                return;
+            }
+
+            try {
+                const response = await axios.get(`/schedule/doctor/${doctorId}/available`);
+                if (response.data.code === 200) {
+                    const schedules = response.data.data;
+                    const select = document.getElementById('newScheduleSelect');
+                    select.innerHTML = '<option value="">请选择时段</option>';
+                    schedules.forEach(schedule => {
+                        const availableSlots = schedule.totalCount - schedule.bookedCount;
+                        if (availableSlots > 0) {
+                            select.innerHTML += `<option value="${schedule.id}">${schedule.scheduleDate} ${schedule.timeSlotName} (剩余${availableSlots}个号)</option>`;
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('加载时段失败:', error);
+            }
+        }
+
+        // 修改预约表单提交
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('modifyAppointmentForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const appointmentId = document.getElementById('modifyAppointmentId').value;
+                const newScheduleId = document.getElementById('newScheduleSelect').value;
+                const newSymptoms = document.getElementById('newSymptoms').value;
+
+                if (!newScheduleId) {
+                    alert('请选择新的预约时段');
+                    return;
+                }
+
+                try {
+                    const response = await axios.put('/appointment/modifySchedule', {
+                        id: appointmentId,
+                        scheduleId: newScheduleId,
+                        symptoms: newSymptoms
+                    });
+
+                    if (response.data.code === 200) {
+                        alert('预约修改成功！');
+                        closeModifyAppointmentModal();
+                        loadMyAppointments(); // 重新加载预约列表
+                    } else {
+                        alert(response.data.message || '修改预约失败');
+                    }
+                } catch (error) {
+                    console.error('修改预约失败:', error);
+                    alert('修改预约失败，请稍后重试');
+                }
+            });
+        });
+
+        // 页面加载时执行
+        window.onload = function() {
+            checkLogin();
+            showSection('personal-info');
+            
+            // 点击模态框外部关闭模态框
+            window.onclick = function(event) {
+                const modal = document.getElementById('modifyAppointmentModal');
+                if (event.target === modal) {
+                    closeModifyAppointmentModal();
+                }
+            }
+        };
+    </script>
+</body>
+</html> 
