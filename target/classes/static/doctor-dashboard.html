@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医生管理系统 - 医院预约挂号系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 1rem;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section h2 {
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-card h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-card p {
+            color: #666;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            margin-right: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            opacity: 0.9;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: 2;
+            }
+            
+            .main-content {
+                order: 1;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1>医生管理系统</h1>
+            </div>
+            <div class="user-info">
+                <span id="doctorName">医生</span>
+                <button class="logout-btn" onclick="logout()">退出登录</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <div class="sidebar">
+                <button class="nav-item active" onclick="showSection('personal-info')">个人信息</button>
+                <button class="nav-item" onclick="showSection('schedule-management')">排班管理</button>
+                <button class="nav-item" onclick="showSection('patient-queue')">患者队列</button>
+                <button class="nav-item" onclick="showSection('appointment-history')">历史预约</button>
+                <button class="nav-item" onclick="showSection('statistics')">统计信息</button>
+            </div>
+
+            <div class="main-content">
+                <!-- 个人信息 -->
+                <div id="personal-info" class="section active">
+                    <h2>个人信息</h2>
+                    <div class="info-grid" id="doctorInfoGrid">
+                        <!-- 动态加载医生信息 -->
+                    </div>
+                </div>
+
+                <!-- 排班管理 -->
+                <div id="schedule-management" class="section">
+                    <h2>排班管理</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>日期</th>
+                                    <th>时间段</th>
+                                    <th>诊室</th>
+                                    <th>状态</th>
+                                    <th>预约数量</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scheduleTableBody">
+                                <!-- 动态加载排班信息 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 患者队列 -->
+                <div id="patient-queue" class="section">
+                    <h2>今日患者队列</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>患者姓名</th>
+                                    <th>预约时间</th>
+                                    <th>联系电话</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="queueTableBody">
+                                <!-- 动态加载患者队列 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 历史预约 -->
+                <div id="appointment-history" class="section">
+                    <h2>历史预约记录</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>预约日期</th>
+                                    <th>患者姓名</th>
+                                    <th>联系电话</th>
+                                    <th>预约时间</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody">
+                                <!-- 动态加载历史记录 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 统计信息 -->
+                <div id="statistics" class="section">
+                    <h2>统计信息</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3 id="todayAppointments">0</h3>
+                            <p>今日预约</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="weeklyAppointments">0</h3>
+                            <p>本周预约</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="monthlyAppointments">0</h3>
+                            <p>本月预约</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="totalPatients">0</h3>
+                            <p>累计患者</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.3.4/dist/axios.min.js"></script>
+    <script>
+        let currentDoctorId = null;
+
+        // 检查登录状态
+        function checkLogin() {
+            const userRole = sessionStorage.getItem('userRole');
+            const doctorId = sessionStorage.getItem('doctorId');
+            const doctorName = sessionStorage.getItem('doctorName');
+            
+            if (userRole !== 'doctor' || !doctorId) {
+                window.location.href = 'doctor-login.html';
+                return false;
+            }
+            
+            currentDoctorId = doctorId;
+            document.getElementById('doctorName').textContent = doctorName || '医生';
+            return true;
+        }
+
+        // 显示指定部分
+        function showSection(sectionId) {
+            // 隐藏所有部分
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // 移除所有导航项的active类
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 显示指定部分
+            document.getElementById(sectionId).classList.add('active');
+            
+            // 激活对应的导航项
+            event.target.classList.add('active');
+            
+            // 根据部分加载数据
+            switch(sectionId) {
+                case 'personal-info':
+                    loadDoctorInfo();
+                    break;
+                case 'schedule-management':
+                    loadSchedules();
+                    break;
+                case 'patient-queue':
+                    loadPatientQueue();
+                    break;
+                case 'appointment-history':
+                    loadAppointmentHistory();
+                    break;
+                case 'statistics':
+                    loadStatistics();
+                    break;
+            }
+        }
+
+        // 加载医生信息
+        async function loadDoctorInfo() {
+            try {
+                const response = await axios.get(`/doctor/${currentDoctorId}`);
+                console.log('医生信息响应:', response.data); // 调试用
+                if (response.data.code === 200) {
+                    const doctor = response.data.data;
+                    document.getElementById('doctorInfoGrid').innerHTML = `
+                        <div class="info-card">
+                            <h3>姓名</h3>
+                            <p>${doctor.name}</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>用户名</h3>
+                            <p>${doctor.username}</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>科室</h3>
+                            <p>${doctor.departmentName || '未分配'}</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>职称</h3>
+                            <p>${doctor.title}</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>联系电话</h3>
+                            <p>${doctor.phone}</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>邮箱</h3>
+                            <p>${doctor.email}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('加载医生信息失败:', error);
+            }
+        }
+
+        // 加载排班信息
+        async function loadSchedules() {
+            try {
+                const response = await axios.get(`/schedule/doctor/${currentDoctorId}`);
+                if (response.data.code === 200) {
+                    const schedules = response.data.data;
+                    const tableBody = document.getElementById('scheduleTableBody');
+                    tableBody.innerHTML = schedules.map(schedule => `
+                        <tr>
+                            <td>${schedule.scheduleDate}</td>
+                            <td>${schedule.timeSlotName}</td>
+                            <td>${schedule.clinicRoomName}</td>
+                            <td>
+                                <span class="badge ${schedule.available ? 'bg-success' : 'bg-danger'}">
+                                    ${schedule.available ? '可用' : '不可用'}
+                                </span>
+                            </td>
+                            <td>${schedule.appointmentCount || 0}</td>
+                            <td>
+                                <button class="btn btn-primary" onclick="viewScheduleDetails('${schedule.id}')">查看详情</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('加载排班信息失败:', error);
+            }
+        }
+
+        // 加载患者队列
+        async function loadPatientQueue() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const response = await axios.get(`/appointment/doctor/${currentDoctorId}/date/${today}`);
+                if (response.data.code === 200) {
+                    const appointments = response.data.data;
+                    const tableBody = document.getElementById('queueTableBody');
+                    tableBody.innerHTML = appointments.map((appointment, index) => `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${appointment.patientName}</td>
+                            <td>${appointment.appointmentDate} ${appointment.timeSlotName}</td>
+                            <td>${appointment.patientPhone}</td>
+                            <td>
+                                <span class="badge ${getStatusBadgeClass(appointment.status)}">
+                                    ${getStatusText(appointment.status)}
+                                </span>
+                            </td>
+                            <td>
+                                ${appointment.status === '已确认' ? 
+                                    `<button class="btn btn-success" onclick="completeAppointment('${appointment.id}')">完成就诊</button>` :
+                                    `<button class="btn btn-warning" onclick="confirmAppointment('${appointment.id}')">确认就诊</button>`
+                                }
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('加载患者队列失败:', error);
+            }
+        }
+
+        // 加载历史预约
+        async function loadAppointmentHistory() {
+            try {
+                const response = await axios.get(`/appointment/doctor/${currentDoctorId}/history`);
+                if (response.data.code === 200) {
+                    const appointments = response.data.data;
+                    const tableBody = document.getElementById('historyTableBody');
+                    tableBody.innerHTML = appointments.map(appointment => `
+                        <tr>
+                            <td>${appointment.appointmentDate}</td>
+                            <td>${appointment.patientName}</td>
+                            <td>${appointment.patientPhone}</td>
+                            <td>${appointment.timeSlotName}</td>
+                            <td>
+                                <span class="badge ${getStatusBadgeClass(appointment.status)}">
+                                    ${getStatusText(appointment.status)}
+                                </span>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('加载历史预约失败:', error);
+            }
+        }
+
+        // 加载统计信息
+        async function loadStatistics() {
+            try {
+                const response = await axios.get(`/appointment/doctor/${currentDoctorId}/statistics`);
+                if (response.data.code === 200) {
+                    const stats = response.data.data;
+                    document.getElementById('todayAppointments').textContent = stats.today || 0;
+                    document.getElementById('weeklyAppointments').textContent = stats.week || 0;
+                    document.getElementById('monthlyAppointments').textContent = stats.month || 0;
+                    document.getElementById('totalPatients').textContent = stats.total || 0;
+                }
+            } catch (error) {
+                console.error('加载统计信息失败:', error);
+            }
+        }
+
+        // 确认预约
+        async function confirmAppointment(appointmentId) {
+            try {
+                const response = await axios.put(`/appointment/${appointmentId}/status`, {
+                    status: '已确认'
+                });
+                if (response.data.code === 200) {
+                    alert('预约已确认');
+                    loadPatientQueue();
+                }
+            } catch (error) {
+                console.error('确认预约失败:', error);
+                alert('确认预约失败');
+            }
+        }
+
+        // 完成预约
+        async function completeAppointment(appointmentId) {
+            try {
+                const response = await axios.put(`/appointment/${appointmentId}/status`, {
+                    status: '已完成'
+                });
+                if (response.data.code === 200) {
+                    alert('就诊已完成');
+                    loadPatientQueue();
+                }
+            } catch (error) {
+                console.error('完成就诊失败:', error);
+                alert('完成就诊失败');
+            }
+        }
+
+        // 获取状态徽章样式
+        function getStatusBadgeClass(status) {
+            switch(status) {
+                case '已预约': return 'bg-warning';
+                case '已确认': return 'bg-info';
+                case '已完成': return 'bg-success';
+                case '已取消': return 'bg-danger';
+                case '过期': return 'bg-secondary';
+                // 兼容英文状态值
+                case 'BOOKED': return 'bg-warning';
+                case 'CONFIRMED': return 'bg-info';
+                case 'COMPLETED': return 'bg-success';
+                case 'CANCELLED': return 'bg-danger';
+                default: return 'bg-secondary';
+            }
+        }
+
+        // 获取状态文本
+        function getStatusText(status) {
+            switch(status) {
+                case '已预约': return '已预约';
+                case '已确认': return '已确认';
+                case '已完成': return '已完成';
+                case '已取消': return '已取消';
+                case '过期': return '过期';
+                // 兼容英文状态值
+                case 'BOOKED': return '已预约';
+                case 'CONFIRMED': return '已确认';
+                case 'COMPLETED': return '已完成';
+                case 'CANCELLED': return '已取消';
+                default: return '未知';
+            }
+        }
+
+        // 查看排班详情
+        async function viewScheduleDetails(scheduleId) {
+            try {
+                const response = await axios.get(`/schedule/selectById?id=${scheduleId}`);
+                if (response.data.code === 200) {
+                    const schedule = response.data.data;
+                    
+                    // 获取该排班的预约列表
+                    const appointmentResponse = await axios.get(`/appointment/selectByScheduleId?scheduleId=${scheduleId}`);
+                    const appointments = appointmentResponse.data.code === 200 ? appointmentResponse.data.data : [];
+                    
+                    const appointmentList = appointments.map((apt, index) => 
+                        `${index + 1}. 预约号${apt.appointmentNumber} - ${apt.status}`
+                    ).join('\n');
+                    
+                    const details = `
+排班详情：
+--------------
+排班ID：${schedule.id}
+排班日期：${schedule.scheduleDate}
+总号源数：${schedule.totalCount}
+已预约数：${schedule.bookedCount}
+剩余号源：${schedule.totalCount - schedule.bookedCount}
+状态：${schedule.status}
+
+当前预约列表：
+${appointmentList || '暂无预约'}
+                    `;
+                    
+                    alert(details);
+                } else {
+                    alert('获取排班详情失败：' + response.data.message);
+                }
+            } catch (error) {
+                console.error('查看排班详情失败:', error);
+                alert('查看排班详情失败');
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        // 页面加载时执行
+        document.addEventListener('DOMContentLoaded', function() {
+            if (checkLogin()) {
+                loadDoctorInfo();
+            }
+        });
+    </script>
+</body>
+</html> 

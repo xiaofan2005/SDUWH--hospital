@@ -1,0 +1,23 @@
+server:
+  port: 8091 # 修改Tomcat端口号
+
+spring:
+  datasource:
+    # 数据库驱动
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 数据库连接地址, useSSL=false表示禁用SSL 改用用户名和密码认证, serverTimezone时区
+    url: jdbc:mysql://localhost:3306/hospital?useSSL=false&serverTimezone=Asia/Shanghai
+    # 数据库用户名
+    username: root
+    # 数据库密码
+    password: root
+
+springdoc:
+  api-docs:
+    enabled: true # 开启Spring文档
+  swagger-ui:
+    enabled: true
+    # 请求的格式
+    default-consumes-media-type: application/json
+    # 响应的格式
+    default-produces-media-type: application/json 
